@@ -6,10 +6,15 @@ var cookieParser    = require('cookie-parser');
 var bodyParser      = require('body-parser');
 var mongoose        = require('mongoose');
 var methodOverride  = require('method-override')
+var passport        = require('passport')
+var flash           = require('connect-flash')
+var session         = require('express-session')
+var configDB        = require('./config/database')
+
 var app             = express();
 
 // mongoDB configuration
-mongoose.connect('mongodb://localhost/exvex', function(err, res){
+mongoose.connect(configDB.url, function(err, res){
     if(err){
       console.log('error connecting to database, ' + err);
     }else{
@@ -17,21 +22,35 @@ mongoose.connect('mongodb://localhost/exvex', function(err, res){
     }
 });
 
+// mounth passport
+require('./config/passport')(passport);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// Passport configuration
+app.use(session({ secret: 'exvexnodejs', saveUninitialized: true, resave: true })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+
 // Add routes
-article = require('./routes/article')(app);
+index   = require('./routes/index')(app, passport);
+session = require('./routes/session')(app, passport);
+user    = require('./routes/user')(app, passport);
+article = require('./routes/article')(app, passport);
 
 // Start server
 app.listen('8080', function(){

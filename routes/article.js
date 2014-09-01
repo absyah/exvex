@@ -1,6 +1,6 @@
 var Article = require('../models/article')
 
-module.exports = function(app){
+module.exports = function(app, passport){
 
     /**
     * Find and retrieves all articles
@@ -17,7 +17,7 @@ module.exports = function(app){
                 return res.send(articles);
             }else{
                 res.statusCode = 500;
-                console.log('Internal error(%d): $s', res.statusCode, err.message);
+                console.log('Internal error(%d): %s', res.statusCode, err.message);
                 return res.send({ error: 'Server Error' });
             }
         });      
@@ -43,7 +43,7 @@ module.exports = function(app){
                 return res.send({ status: 'OK', article: article });
             }else{
                 res.statusCode = 500;
-                console.log('Internal error(%d): $s', res.statusCode, err.message);
+                console.log('Internal error(%d): %s', res.statusCode, err.message);
                 return res.send({ error: 'Server Error' });
             }
         });
