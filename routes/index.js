@@ -1,10 +1,7 @@
-var express = require('express');
-var router = express.Router();
+module.exports = function(app, passport) {
 
-/* GET home page. */
-router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
-});
+    app.get('/', function(req, res) {
+        res.render('index.ejs') // load index.ejs
+    });
 
-
-module.exports = router;
+};
